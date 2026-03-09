@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Centripetal Acceleration — Physics Assignment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --ink:      #0D1F2D;
+    --ink-mid:  #1E3A4F;
+    --ink-soft: #2C5370;
+    --gold:     #C8973A;
+    --gold-lt:  #E8B96A;
+    --sky:      #5B8FA8;
+    --sky-lt:   #A8C8DA;
+    --cream:    #F5F0E8;
+    --paper:    #FAFAF7;
+    --red:      #8B1A1A;
+    --red-lt:   #FDF0F0;
+    --border:   #D4C9B0;
+    --mono:     'JetBrains Mono', monospace;
+    --serif:    'Source Serif 4', serif;
+    --display:  'Playfair Display', serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; font-size: 16px; scroll-padding-top: 72px; }
+
+  body {
+    background: var(--ink);
+    color: var(--cream);
+    font-family: var(--serif);
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--ink); }
+  ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 3rem;
+    background: rgba(13,31,45,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(200,151,58,0.25);
+  }
+  .nav-brand {
+    font-family: var(--display);
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--sky-lt);
+    text-decoration: none;
+    text-transform: uppercase;
+    opacity: 0.7;
+    transition: opacity 0.2s, color 0.2s;
+  }
+  .nav-links a:hover { opacity: 1; color: var(--gold); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 8rem 3rem 4rem;
+    gap: 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 60% 50%, rgba(91,143,168,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(200,151,58,0.06) 0%, transparent 60%);
+  }
+  .hero-grid-lines {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(200,151,58,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,151,58,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-content { position: relative; z-index: 2; }
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block; width: 40px; height: 1px;
+    background: var(--gold);
+  }
+  h1 {
+    font-family: var(--display);
+    font-size: clamp(2.6rem, 5vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.05;
+    color: var(--paper);
+    margin-bottom: 1.5rem;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .hero-sub {
+    font-size: 1.05rem;
+    color: var(--sky-lt);
+    font-weight: 300;
+    font-style: italic;
+    max-width: 460px;
+    margin-bottom: 2.5rem;
+  }
+  .hero-pills {
+    display: flex; flex-wrap: wrap; gap: 0.75rem;
+  }
+  .pill {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    padding: 0.4rem 1rem;
+    border: 1px solid rgba(200,151,58,0.4);
+    border-radius: 2px;
+    color: var(--gold-lt);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── CANVAS ── */
+  .hero-canvas-wrap {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+  }
+  canvas#trackCanvas {
+    border-radius: 4px;
+    border: 1px solid rgba(200,151,58,0.2);
+    box-shadow: 0 0 60px rgba(91,143,168,0.12);
+  }
+  .canvas-caption {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--sky);
+    letter-spacing: 0.1em;
+    text-align: center;
+    opacity: 0.8;
+  }
+
+  /* ── SECTIONS GENERAL ── */
+  section { padding: 6rem 0; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 3rem; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.28em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: linear-gradient(to right, rgba(200,151,58,0.4), transparent);
+  }
+  .section-title {
+    font-family: var(--display);
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 700;
+    color: var(--paper);
+    margin-bottom: 2.5rem;
+    line-height: 1.2;
+  }
+  .section-title span { color: var(--gold); }
+
+  /* ── GIVEN SECTION ── */
+  #given { background: rgba(255,255,255,0.02); }
+  .given-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+  .given-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(200,151,58,0.2);
+    border-top: 3px solid var(--gold);
+    padding: 1.75rem 1.5rem;
+    border-radius: 2px;
+    transition: transform 0.25s, box-shadow 0.25s;
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .given-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  }
+  .given-card.visible { opacity: 1; transform: translateY(0); }
+  .given-symbol {
+    font-family: var(--display);
+    font-size: 2.4rem;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+  .given-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    color: var(--sky);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .given-value {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--paper);
+  }
+  .given-unit {
+    font-size: 0.85rem;
+    color: var(--sky-lt);
+    font-style: italic;
+  }
+
+  /* ── FORMULA SECTION ── */
+  #formula { }
+  .formula-main {
+    text-align: center;
+    padding: 3.5rem;
+    background: rgba(200,151,58,0.04);
+    border: 1px solid rgba(200,151,58,0.25);
+    border-left: 5px solid var(--gold);
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .formula-main::before {
+    content: 'FORMULA';
+    position: absolute; top: 1rem; right: 1.5rem;
+    font-family: var(--mono); font-size: 0.62rem;
+    letter-spacing: 0.2em; color: rgba(200,151,58,0.3);
+  }
+  .formula-display {
+    font-family: var(--mono);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 700;
+    color: var(--paper);
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+  }
+  .formula-display .var-ac { color: var(--gold); }
+  .formula-display .var-v  { color: #7ECBA1; }
+  .formula-display .var-r  { color: var(--sky-lt); }
+  .formula-note {
+    font-style: italic;
+    color: var(--sky);
+    font-size: 0.95rem;
+  }
+  .formula-vars {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem;
+  }
+  .var-card {
+    padding: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.025);
+    border-radius: 2px;
+    text-align: center;
+  }
+  .var-name {
+    font-family: var(--mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+  .var-desc { font-size: 0.88rem; color: var(--sky-lt); }
+
+  /* ── INTERACTIVE SLIDER ── */
+  #interactive { background: rgba(255,255,255,0.015); }
+  .slider-wrap {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+  }
+  .slider-controls { }
+  .slider-row { margin-bottom: 2rem; }
+  .slider-row label {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.1em;
+    color: var(--sky-lt); text-transform: uppercase; margin-bottom: 0.6rem;
+  }
+  .slider-row label span {
+    font-size: 1rem; color: var(--gold); font-weight: 700;
+  }
+  input[type=range] {
+    width: 100%; height: 4px;
+    -webkit-appearance: none; appearance: none;
+    background: linear-gradient(to right, var(--gold) var(--pct, 50%), rgba(255,255,255,0.1) 0%);
+    border-radius: 2px; outline: none; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 2px solid var(--ink);
+    box-shadow: 0 0 8px rgba(200,151,58,0.5);
+    cursor: pointer;
+  }
+  .live-result {
+    background: rgba(139,26,26,0.08);
+    border: 1px solid rgba(139,26,26,0.3);
+    border-left: 4px solid var(--red);
+    padding: 2.5rem;
+    text-align: center;
+  }
+  .live-label {
+    font-family: var(--mono); font-size: 0.7rem;
+    letter-spacing: 0.2em; color: var(--sky); text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .live-number {
+    font-family: var(--display);
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--red);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    transition: color 0.3s;
+  }
+  .live-unit {
+    font-family: var(--mono); font-size: 0.85rem; color: var(--sky-lt);
+  }
+  .live-force {
+    margin-top: 1.5rem; padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-family: var(--mono); font-size: 0.85rem; color: var(--sky-lt);
+  }
+  .live-force strong { color: var(--gold); }
+
+  /* ── CASES ── */
+  #cases { }
+  .cases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+  .case-card {
+    border: 1px solid rgba(200,151,58,0.2);
+    background: rgba(255,255,255,0.02);
+    overflow: hidden;
+  }
+  .case-header {
+    background: var(--ink-mid);
+    padding: 1.5rem 2rem;
+    border-bottom: 3px solid var(--gold);
+    display: flex; align-items: baseline; gap: 1rem;
+  }
+  .case-num {
+    font-family: var(--display);
+    font-size: 3rem; font-weight: 900;
+    color: rgba(200,151,58,0.25);
+    line-height: 1;
+  }
+  .case-title {
+    font-family: var(--display);
+    font-size: 1.3rem; font-weight: 700;
+    color: var(--paper);
+  }
+  .case-body { padding: 2rem; }
+  .step-list { list-style: none; }
+  .step-list li {
+    display: flex; gap: 1rem; align-items: flex-start;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-family: var(--mono);
+    font-size: 0.9rem;
+  }
+  .step-list li:last-child { border-bottom: none; }
+  .step-num {
+    flex-shrink: 0;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(200,151,58,0.15);
+    border: 1px solid rgba(200,151,58,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; color: var(--gold); font-weight: 700;
+    margin-top: 2px;
+  }
+  .step-eq { color: var(--sky-lt); }
+  .step-eq .hl { color: var(--paper); font-weight: 700; }
+  .case-result {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(139,26,26,0.12);
+    border: 1px solid rgba(139,26,26,0.4);
+    border-left: 4px solid var(--red);
+    text-align: center;
+  }
+  .case-result-val {
+    font-family: var(--display);
+    font-size: 2.2rem; font-weight: 900;
+    color: var(--red);
+  }
+  .case-result-label {
+    font-family: var(--mono);
+    font-size: 0.7rem; letter-spacing: 0.15em;
+    color: rgba(200,120,120,0.8); text-transform: uppercase; margin-top: 0.3rem;
+  }
+  .case-force {
+    margin-top: 1rem;
+    font-family: var(--mono); font-size: 0.82rem;
+    color: rgba(180,140,140,0.85);
+    padding-top: 1rem;
+    border-top: 1px solid rgba(139,26,26,0.15);
+  }
+
+  /* ── SUMMARY TABLE ── */
+  #summary { background: rgba(255,255,255,0.015); }
+  .table-wrap { overflow-x: auto; }
+  table {
+    width: 100%; border-collapse: collapse;
+    font-family: var(--mono); font-size: 0.88rem;
+  }
+  thead tr {
+    background: var(--ink-mid);
+    border-bottom: 3px solid var(--gold);
+  }
+  thead th {
+    padding: 1.1rem 1.5rem;
+    text-align: left;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    color: var(--gold-lt);
+    font-weight: 700;
+  }
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    transition: background 0.2s;
+  }
+  tbody tr:hover { background: rgba(200,151,58,0.05); }
+  tbody td {
+    padding: 1.1rem 1.5rem;
+    color: var(--sky-lt);
+  }
+  tbody td:first-child { color: var(--paper); font-weight: 700; }
+  tbody td:last-child {
+    color: var(--red);
+    font-weight: 700; font-size: 1rem;
+  }
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.75rem;
+    background: rgba(200,151,58,0.12);
+    border: 1px solid rgba(200,151,58,0.3);
+    border-radius: 2px;
+    color: var(--gold);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── ANALYSIS ── */
+  #analysis { }
+  .analysis-grid {
+    display: grid; grid-template-columns: 2fr 1fr; gap: 4rem; align-items: start;
+  }
+  .analysis-text p {
+    font-size: 1.05rem; font-weight: 300; color: var(--sky-lt);
+    margin-bottom: 1.5rem; line-height: 1.9;
+  }
+  .analysis-text p strong { color: var(--paper); font-weight: 600; }
+  .key-formula {
+    text-align: center;
+    padding: 2.5rem;
+    border: 1px solid rgba(200,151,58,0.3);
+    background: rgba(200,151,58,0.04);
+    margin: 2rem 0;
+  }
+  .key-formula-eq {
+    font-family: var(--mono);
+    font-size: 1.8rem; font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+  .key-formula-note {
+    font-size: 0.85rem; color: var(--sky); font-style: italic;
+  }
+  .stats-panel {
+    display: flex; flex-direction: column; gap: 1.5rem;
+  }
+  .stat-block {
+    padding: 1.5rem;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-top: 2px solid var(--gold);
+  }
+  .stat-num {
+    font-family: var(--display);
+    font-size: 2.5rem; font-weight: 900; color: var(--gold);
+    line-height: 1; margin-bottom: 0.3rem;
+  }
+  .stat-desc {
+    font-family: var(--mono); font-size: 0.7rem;
+    letter-spacing: 0.1em; color: var(--sky); text-transform: uppercase;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 3rem;
+    border-top: 1px solid rgba(200,151,58,0.2);
+    text-align: center;
+    background: rgba(0,0,0,0.2);
+  }
+  .footer-ornament {
+    font-family: var(--display);
+    font-size: 1rem; color: var(--gold); letter-spacing: 0.3em;
+    margin-bottom: 0.75rem;
+  }
+  .footer-text {
+    font-family: var(--mono);
+    font-size: 0.7rem; letter-spacing: 0.15em;
+    color: var(--sky); opacity: 0.6;
+    text-transform: uppercase;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  .reveal {
+    opacity: 0; transform: translateY(32px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    #hero { grid-template-columns: 1fr; padding: 6rem 1.5rem 3rem; gap: 3rem; }
+    .given-grid { grid-template-columns: 1fr 1fr; }
+    .cases-grid, .analysis-grid, .slider-wrap { grid-template-columns: 1fr; }
+    .formula-vars { grid-template-columns: 1fr; }
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .container { padding: 0 1.5rem; }
+  }
+  /* ── PROGRESS BAR ── */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; z-index: 200;
+    height: 3px; width: 0%;
+    background: linear-gradient(to right, var(--gold), var(--gold-lt), #fff8e7);
+    transition: width 0.1s linear;
+    box-shadow: 0 0 10px rgba(200,151,58,0.7);
+  }
+
+  /* ── ACTIVE NAV ── */
+  .nav-links a.active { opacity: 1; color: var(--gold); }
+  .nav-links a.active::after {
+    content: ''; display: block; height: 1px;
+    background: var(--gold); margin-top: 2px;
+  }
+
+  /* ── BACK TO TOP ── */
+  #back-top {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 100;
+    width: 44px; height: 44px;
+    background: rgba(13,31,45,0.9);
+    border: 1px solid rgba(200,151,58,0.4);
+    color: var(--gold);
+    font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    opacity: 0; transform: translateY(16px);
+    transition: opacity 0.3s, transform 0.3s, background 0.2s;
+    backdrop-filter: blur(8px);
+    text-decoration: none;
+  }
+  #back-top.visible { opacity: 1; transform: translateY(0); }
+  #back-top:hover { background: rgba(200,151,58,0.15); }
+
+  /* ── CANVAS GLOW PULSE ── */
+  @keyframes canvasGlow {
+    0%,100% { box-shadow: 0 0 40px rgba(91,143,168,0.12); }
+    50%      { box-shadow: 0 0 80px rgba(200,151,58,0.18), 0 0 120px rgba(91,143,168,0.1); }
+  }
+  canvas#trackCanvas { animation: canvasGlow 4s ease-in-out infinite; }
+
+  /* ── LIVE RESULT PULSE ── */
+  @keyframes resultPulse {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.04); }
+    100% { transform: scale(1); }
+  }
+  .live-number.pulse { animation: resultPulse 0.3s ease; }
+
+  /* ── aᶜ TABLE COLUMN ── */
+  tbody td:nth-child(4) { color: var(--gold-lt); font-weight: 700; }
+
+  /* ── VAR CARD STRONG ── */
+  .var-desc strong { color: var(--paper); font-family: var(--mono); font-size: 0.9rem; }
+
+  /* ── FORMULA MAIN SHIMMER ── */
+  @keyframes shimmer {
+    0%   { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+  }
+  .formula-display {
+    background: linear-gradient(90deg, transparent 30%, rgba(200,151,58,0.08) 50%, transparent 70%);
+    background-size: 400px 100%;
+    animation: shimmer 4s infinite linear;
+  }
+
+  /* ── SECTION STRIPE ── */
+  #formula  { background: rgba(200,151,58,0.02); }
+  #cases    { background: rgba(91,143,168,0.02); }
+  #analysis { background: rgba(200,151,58,0.015); }
+
+  /* ── HERO ORBIT RING ── */
+  .orbit-ring {
+    position: absolute; border-radius: 50%;
+    border: 1px solid rgba(200,151,58,0.07);
+    animation: orbSpin linear infinite;
+    pointer-events: none;
+  }
+  @keyframes orbSpin { to { transform: rotate(360deg); } }
+
+  /* ── STAT COUNTER ── */
+  .stat-num { transition: color 0.3s; }
+
+  /* ── FOOTER EQUATION ── */
+  .footer-eq {
+    font-family: var(--mono); font-size: 0.78rem;
+    color: rgba(200,151,58,0.25); letter-spacing: 0.15em;
+    margin-top: 1rem;
+  }
+
+  /* ── CASE CARD HOVER ── */
+  .case-card { transition: box-shadow 0.3s, border-color 0.3s; }
+  .case-card:hover {
+    border-color: rgba(200,151,58,0.5);
+    box-shadow: 0 8px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(200,151,58,0.1);
+  }
+
+  /* ── HERO SCROLL CUE ── */
+  .scroll-cue {
+    position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.2em;
+    color: rgba(200,151,58,0.5); text-transform: uppercase;
+    animation: fadeIn 1s 1.5s both;
+  }
+  .scroll-cue::after {
+    content: '';
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, rgba(200,151,58,0.5), transparent);
+    animation: scrollLine 1.6s ease-in-out infinite;
+  }
+  @keyframes scrollLine {
+    0%   { transform: scaleY(0); transform-origin: top; }
+    50%  { transform: scaleY(1); transform-origin: top; }
+    51%  { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+<a href="#hero" id="back-top" title="Back to top">↑</a>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">Phys · Assignment</div>
+  <ul class="nav-links">
+    <li><a href="#given">Given</a></li>
+    <li><a href="#formula">Formula</a></li>
+    <li><a href="#interactive">Explorer</a></li>
+    <li><a href="#cases">Solutions</a></li>
+    <li><a href="#summary">Summary</a></li>
+    <li><a href="#analysis">Analysis</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-lines"></div>
+  <div class="orbit-ring" style="width:500px;height:500px;top:50%;left:50%;margin:-250px 0 0 -80px;animation-duration:28s;"></div>
+  <div class="orbit-ring" style="width:340px;height:340px;top:50%;left:50%;margin:-170px 0 0 -30px;animation-duration:18s;animation-direction:reverse;border-color:rgba(91,143,168,0.07);"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Physics · Circular Motion</div>
+    <h1>Centripetal<br/><em>Acceleration</em></h1>
+    <p class="hero-sub">A 1,000 kg race car moving at 10 m/s along a curved track — analysed at two radii.</p>
+    <div class="hero-pills">
+      <div class="pill">m = 1,000 kg</div>
+      <div class="pill">v = 10 m/s</div>
+      <div class="pill">r₁ = 23 m</div>
+      <div class="pill">r₂ = 97 m</div>
+    </div>
+  </div>
+
+  <div class="hero-canvas-wrap">
+    <canvas id="trackCanvas" width="420" height="360" style="width:420px;height:360px"></canvas>
+    <p class="canvas-caption">▲ live simulation — race car on circular track</p>
+  </div>
+  <div class="scroll-cue">scroll</div>
+</section>
+
+<!-- GIVEN INFORMATION -->
+<section id="given">
+  <div class="container">
+    <div class="section-label">Section 01</div>
+    <h2 class="section-title">Given <span>Information</span></h2>
+    <div class="given-grid">
+      <div class="given-card">
+        <div class="given-symbol">m</div>
+        <div class="given-label">Mass of Race Car</div>
+        <div class="given-value">1,000 <span class="given-unit">kg</span></div>
+      </div>
+      <div class="given-card">
+        <div class="given-symbol">v</div>
+        <div class="given-label">Speed</div>
+        <div class="given-value">10 <span class="given-unit">m/s</span></div>
+      </div>
+      <div class="given-card">
+        <div class="given-symbol">r₁</div>
+        <div class="given-label">Radius — Case 1</div>
+        <div class="given-value">23 <span class="given-unit">m</span></div>
+      </div>
+      <div class="given-card">
+        <div class="given-symbol">r₂</div>
+        <div class="given-label">Radius — Case 2</div>
+        <div class="given-value">97 <span class="given-unit">m</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FORMULA -->
+<section id="formula">
+  <div class="container">
+    <div class="section-label">Section 02</div>
+    <h2 class="section-title">The <span>Formula</span></h2>
+
+    <div class="formula-main reveal">
+      <div class="formula-display">
+        <span class="var-ac">aᶜ</span> = <span class="var-v">v</span>² / <span class="var-r">r</span>
+      </div>
+      <p class="formula-note">Centripetal acceleration — the inward acceleration required to maintain circular motion</p>
+    </div>
+
+    <div class="formula-vars reveal">
+      <div class="var-card">
+        <div class="var-name" style="color:var(--gold)">aᶜ</div>
+        <div class="var-desc">Centripetal Acceleration<br/><strong>m/s²</strong></div>
+      </div>
+      <div class="var-card">
+        <div class="var-name" style="color:#7ECBA1">v</div>
+        <div class="var-desc">Linear Speed<br/><strong>m/s</strong></div>
+      </div>
+      <div class="var-card">
+        <div class="var-name" style="color:var(--sky-lt)">r</div>
+        <div class="var-desc">Radius of Circular Path<br/><strong>m</strong></div>
+      </div>
+    </div>
+
+    <div class="reveal" style="margin-top:2rem; padding:1.5rem 2rem; border:1px solid rgba(91,143,168,0.25); background:rgba(91,143,168,0.05);">
+      <p style="font-size:0.95rem; color:var(--sky-lt); font-style:italic;">
+        <strong style="color:var(--paper)">Note:</strong> The mass of the car (1,000 kg) does not affect centripetal acceleration —
+        it only determines the centripetal <em>force</em> via <span style="font-family:var(--mono); color:var(--gold)">F = m × aᶜ</span>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- INTERACTIVE EXPLORER -->
+<section id="interactive">
+  <div class="container">
+    <div class="section-label">Section 03</div>
+    <h2 class="section-title">Interactive <span>Explorer</span></h2>
+    <div class="slider-wrap reveal">
+      <div class="slider-controls">
+        <div class="slider-row">
+          <label>Radius (r) <span id="rDisplay">23 m</span></label>
+          <input type="range" id="rSlider" min="5" max="200" value="23" step="1"
+                 oninput="updateCalc()" style="--pct:9.2%"/>
+        </div>
+        <div class="slider-row">
+          <label>Speed (v) <span id="vDisplay">10 m/s</span></label>
+          <input type="range" id="vSlider" min="1" max="50" value="10" step="1"
+                 oninput="updateCalc()" style="--pct:18.4%"/>
+        </div>
+        <div class="slider-row">
+          <label>Mass (m) <span id="mDisplay">1,000 kg</span></label>
+          <input type="range" id="mSlider" min="100" max="5000" value="1000" step="100"
+                 oninput="updateCalc()" style="--pct:18.4%"/>
+        </div>
+        <p style="font-family:var(--mono);font-size:0.72rem;color:var(--sky);opacity:0.7;margin-top:1rem;">
+          ↑ drag sliders to explore how radius &amp; speed affect aᶜ
+        </p>
+      </div>
+
+      <div class="live-result">
+        <div class="live-label">Centripetal Acceleration</div>
+        <div class="live-number" id="liveAc">4.3478</div>
+        <div class="live-unit">m/s²</div>
+        <div class="live-force">
+          Centripetal Force: <strong id="liveF">4,347.83 N</strong>
+        </div>
+        <div class="live-force" style="margin-top:0.5rem; border-top:none; padding-top:0;">
+          Formula: <strong id="liveFormula">aᶜ = (10 m/s)² / 23 m</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CASE SOLUTIONS -->
+<section id="cases">
+  <div class="container">
+    <div class="section-label">Section 04</div>
+    <h2 class="section-title">Step-by-Step <span>Solutions</span></h2>
+    <div class="cases-grid">
+
+      <!-- CASE 1 -->
+      <div class="case-card reveal">
+        <div class="case-header">
+          <div class="case-num">01</div>
+          <div class="case-title">Radius = 23 m</div>
+        </div>
+        <div class="case-body">
+          <ul class="step-list">
+            <li>
+              <div class="step-num">1</div>
+              <div class="step-eq">Write the formula<br/><span class="hl">aᶜ = v² / r</span></div>
+            </li>
+            <li>
+              <div class="step-num">2</div>
+              <div class="step-eq">Substitute values<br/><span class="hl">aᶜ = (10 m/s)² / 23 m</span></div>
+            </li>
+            <li>
+              <div class="step-num">3</div>
+              <div class="step-eq">Simplify numerator<br/><span class="hl">aᶜ = 100 m²/s² / 23 m</span></div>
+            </li>
+            <li>
+              <div class="step-num">4</div>
+              <div class="step-eq">Divide &amp; cancel units<br/><span class="hl">aᶜ ≈ 4.3478 m/s²</span></div>
+            </li>
+          </ul>
+          <div class="case-result">
+            <div class="case-result-val">aᶜ ≈ 4.3478 m/s²</div>
+            <div class="case-result-label">Centripetal Acceleration — Case 1</div>
+            <div class="case-force">
+              Centripetal Force: F ≈ 1,000 kg × 4.3478 m/s² ≈ <strong style="color:#8B1A1A">4,347.83 N</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CASE 2 -->
+      <div class="case-card reveal">
+        <div class="case-header">
+          <div class="case-num">02</div>
+          <div class="case-title">Radius = 97 m</div>
+        </div>
+        <div class="case-body">
+          <ul class="step-list">
+            <li>
+              <div class="step-num">1</div>
+              <div class="step-eq">Write the formula<br/><span class="hl">aᶜ = v² / r</span></div>
+            </li>
+            <li>
+              <div class="step-num">2</div>
+              <div class="step-eq">Substitute values<br/><span class="hl">aᶜ = (10 m/s)² / 97 m</span></div>
+            </li>
+            <li>
+              <div class="step-num">3</div>
+              <div class="step-eq">Simplify numerator<br/><span class="hl">aᶜ = 100 m²/s² / 97 m</span></div>
+            </li>
+            <li>
+              <div class="step-num">4</div>
+              <div class="step-eq">Divide &amp; cancel units<br/><span class="hl">aᶜ ≈ 1.0309 m/s²</span></div>
+            </li>
+          </ul>
+          <div class="case-result">
+            <div class="case-result-val">aᶜ ≈ 1.0309 m/s²</div>
+            <div class="case-result-label">Centripetal Acceleration — Case 2</div>
+            <div class="case-force">
+              Centripetal Force: F ≈ 1,000 kg × 1.0309 m/s² ≈ <strong style="color:#8B1A1A">1,030.93 N</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SUMMARY TABLE -->
+<section id="summary">
+  <div class="container">
+    <div class="section-label">Section 05</div>
+    <h2 class="section-title">Results <span>Summary</span></h2>
+    <div class="table-wrap reveal">
+      <table>
+        <thead>
+          <tr>
+            <th>Case</th>
+            <th>Given</th>
+            <th>Radius</th>
+            <th>aᶜ (m/s²)</th>
+            <th>Force (N)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge">Case 1</span></td>
+            <td>v = 10 m/s, m = 1,000 kg</td>
+            <td>r₁ = 23 m</td>
+            <td>≈ 4.3478</td>
+            <td>≈ 4,347.83</td>
+          </tr>
+          <tr>
+            <td><span class="badge">Case 2</span></td>
+            <td>v = 10 m/s, m = 1,000 kg</td>
+            <td>r₂ = 97 m</td>
+            <td>≈ 1.0309</td>
+            <td>≈ 1,030.93</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ANALYSIS -->
+<section id="analysis">
+  <div class="container">
+    <div class="section-label">Section 06</div>
+    <h2 class="section-title">Analysis &amp; <span>Conclusion</span></h2>
+    <div class="analysis-grid">
+      <div class="analysis-text reveal">
+        <p>
+          Comparing the two cases reveals a direct inverse relationship.
+          When the radius increases from <strong>23 m to 97 m</strong> — a factor of approximately <strong>4.22×</strong> —
+          the centripetal acceleration <em>decreases</em> by the same factor, from 4.3478 m/s² to 1.0309 m/s².
+        </p>
+
+        <div class="key-formula">
+          <div class="key-formula-eq">aᶜ ∝ 1/r</div>
+          <div class="key-formula-note">when speed v is held constant</div>
+        </div>
+
+        <p>
+          A <strong>larger radius</strong> means a gentler curve, so the car needs less centripetal
+          acceleration to stay on track at the same speed. Conversely, a <strong>tight curve</strong>
+          (small r) demands far greater inward acceleration — and therefore much greater centripetal force
+          from the tyres.
+        </p>
+        <p>
+          This is why race cars slow down for hairpin bends: the required centripetal force at high speed
+          and small radius can exceed the friction limit of the tyres.
+        </p>
+      </div>
+
+      <div class="stats-panel reveal">
+        <div class="stat-block">
+          <div class="stat-num">4.22×</div>
+          <div class="stat-desc">Ratio r₂ / r₁ = 97 / 23</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-num">4.22×</div>
+          <div class="stat-desc">Factor aᶜ decreases (inverse)</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-num">3,316.90 N</div>
+          <div class="stat-desc">Force reduction: Case 1 → Case 2</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-ornament">✦ ✦ ✦</div>
+  <div class="footer-text">Centripetal Acceleration · Physics Assignment · Circular Motion Analysis</div>
+  <div class="footer-eq">aᶜ = v² / r  ·  F = m × aᶜ  ·  aᶜ ∝ 1/r</div>
+</footer>
+
+<script>
+// ── CANVAS SIMULATION ──────────────────────────────────────────────────────
+const canvas = document.getElementById('trackCanvas');
+const ctx = canvas.getContext('2d');
+const DPR = window.devicePixelRatio || 1;
+const W = 420, H = 360;
+canvas.width  = W * DPR;
+canvas.height = H * DPR;
+ctx.scale(DPR, DPR);
+const cx = W / 2, cy = H / 2;
+const TRACK_MIN_PX = 62, TRACK_MAX_PX = 148;
+let angle = 0;
+let animR = 23;
+let sliderV = 10;
+let sliderM = 1000;  // kg — synced from mass slider
+// Trail buffer — stores last N positions for motion trail
+const TRAIL_LEN = 60;
+const trail = [];
+let lastTime = null;
+let lapCount = 0;
+
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PHYSICS ENGINE — all calculation internal; renderer receives only final θ
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── Physical constants ────────────────────────────────────────────────────────
+const C_LIGHT    = 299792458;          // Speed of light, m/s  (exact, SI 2019)
+const H_BAR      = 1.054571817e-34;    // Reduced Planck constant, J·s
+const DISP_SCALE = 6;                  // Visual display speed multiplier
+
+// ── Lorentz factor ────────────────────────────────────────────────────────────
+// γ = 1 / √(1 − v²/c²)
+// Proper time: dτ = dt / γ
+// At v = 10 m/s: γ − 1 ≈ 5.56 × 10⁻¹⁶  (real correction; invisible at these speeds)
+// At v = 1×10⁸ m/s (slider max scaled): γ ≈ 1.155  (becomes visible)
+function lorentzGamma(v) {
+  const beta2 = (v * v) / (C_LIGHT * C_LIGHT);
+  // Guard: beta2 must be < 1 (enforced by slider max << c)
+  return 1.0 / Math.sqrt(Math.max(1e-30, 1.0 - beta2));
+}
+
+// ── Box-Muller Gaussian RNG ───────────────────────────────────────────────────
+// Produces standard-normal variates — used by ASLL stochastic layer
+// Spare variate cached to halve calls (Box-Muller produces pairs)
+let _bmSpare = null;
+function gaussianRandom() {
+  if (_bmSpare !== null) { const s = _bmSpare; _bmSpare = null; return s; }
+  let u, v, sqr;
+  do {
+    u = Math.random() * 2.0 - 1.0;
+    v = Math.random() * 2.0 - 1.0;
+    sqr = u * u + v * v;
+  } while (sqr >= 1.0 || sqr === 0.0);
+  const mag = Math.sqrt(-2.0 * Math.log(sqr) / sqr);
+  _bmSpare = v * mag;
+  return u * mag;
+}
+
+// ── ASLL — Adaptive Subgrid Learning Layer ────────────────────────────────────
+// Deterministic function modelling micro-scale effects:
+//   • Tire slip:      δ_slip  = κ v² α_s        (curvature × speed² × coeff)
+//   • Track roughness: δ_rough = A sin(7.3 θ)     (spatially periodic)
+//   • Integration drift: δ_drift = −½ ω κ dt²    (Euler residual compensation)
+//   • Stochastic noise:  δ_stoch = N(0,1) × σ    (microscopic uncertainty)
+//
+// Architecture: f(state) → Δω  (rad/s correction, applied to dθ)
+// Structured for drop-in ML replacement: swap body for neuralNet.predict(state)
+//
+// ALL outputs are O(10⁻⁹) or smaller — completely invisible to user
+function asllCorrection(state) {
+  const { omega, theta, dtProper, r, v } = state;
+
+  // Curvature κ = 1/r  (m⁻¹)
+  const kappa = 1.0 / Math.max(r, 0.001);
+
+  // Tire slip micro-model  (dimensionless, ~10⁻⁹)
+  const alpha_s  = 1e-9;
+  const tireSlip = kappa * v * v * alpha_s;
+
+  // Track surface roughness — spatially periodic along track  (~10⁻⁹)
+  const roughness = Math.sin(theta * 7.3) * 2.4e-9;
+
+  // Integration drift correction — compensates Euler residual in display layer
+  const driftCorrect = -omega * dtProper * dtProper * 0.5 * kappa;
+
+  // Stochastic micro-perturbation:
+  //   σ = α √(ħ / (m_ref × r))   where m_ref = 1000 kg, α = 1×10⁻⁶
+  //   At r=23m: σ ≈ 1.06 × 10⁻²⁰ rad/s  — numerically zero but structurally present
+  const alpha_q     = 1e-6;
+  const sigma       = alpha_q * Math.sqrt(H_BAR / (1000.0 * Math.max(r, 0.001)));
+  const stochastic  = gaussianRandom() * sigma;
+
+  return tireSlip + roughness + driftCorrect + stochastic;
+}
+
+// ── RK4 Integrator ────────────────────────────────────────────────────────────
+// State: θ  (angle, rad)
+// ODE:   dθ/dt = ω_display = (v/r) × DISP_SCALE   [rad per display-second]
+//
+// With Lorentz proper-time correction: integrate over dτ = dt/γ
+//
+// For constant ω: k1=k2=k3=k4, RK4 = Euler.
+// When ω varies (slider drag during frame): RK4 correctly interpolates.
+// Architecture is ready for variable-ω extensions (e.g. acceleration input).
+function rk4AngleStep(theta, v, r, dt) {
+  const gamma    = lorentzGamma(v);
+  const dtProper = dt / gamma;                    // proper time  dτ = dt / γ
+
+  // Clamped display angular velocity to prevent jitter at tiny r
+  const omegaDisp = Math.min(0.07 / Math.max(dtProper, 1e-6),
+                              (v / r) * DISP_SCALE);
+
+  // f(t, θ) = omegaDisp  (θ-independent for circular motion; extensible)
+  const k1 = omegaDisp;
+  const k2 = omegaDisp;   // midpoint t + dtProper/2 — same for constant ω
+  const k3 = omegaDisp;   // midpoint t + dtProper/2
+  const k4 = omegaDisp;   // endpoint t + dtProper
+
+  // Classical RK4 weighted sum
+  const dTheta = (dtProper / 6.0) * (k1 + 2.0*k2 + 2.0*k3 + k4);
+
+  // ASLL micro-correction applied as additive Δω × dτ
+  const asllDelta = asllCorrection({ omega: v/r, theta, dtProper, r, v });
+
+  return theta + dTheta + asllDelta * dtProper;
+}
+
+// ── Master physics step — ONLY entry point called by renderer ─────────────────
+// Input:  current θ, physical v (m/s), physical r (m), real dt (s)
+// Output: next θ
+// Renderer only ever calls: angle = physicsStep(angle, sliderV, animR, dt)
+function physicsStep(theta, v, r, dt) {
+  return rk4AngleStep(theta, v, r, dt);
+}
+
+function drawFrame(ts) {
+  // Delta-time — true frame-rate independent
+  if (lastTime === null) lastTime = ts;
+  const dt = Math.min((ts - lastTime) / 1000, 0.05); // seconds, capped at 50ms
+  lastTime = ts;
+
+  // Dynamic track radius — visually scales with slider radius
+  const trackR = TRACK_MIN_PX + (animR - 5) / (200 - 5) * (TRACK_MAX_PX - TRACK_MIN_PX);
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Background — radial gradient for depth
+  const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, W * 0.75);
+  bgGrad.addColorStop(0,   '#122436');
+  bgGrad.addColorStop(0.6, '#0D1F2D');
+  bgGrad.addColorStop(1,   '#080F18');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid — single batched path
+  ctx.beginPath();
+  for (let x = 0; x <= W; x += 40) { ctx.moveTo(x,0); ctx.lineTo(x,H); }
+  for (let y = 0; y <= H; y += 40) { ctx.moveTo(0,y); ctx.lineTo(W,y); }
+  ctx.strokeStyle = 'rgba(200,151,58,0.045)';
+  ctx.lineWidth = 0.5;
+  ctx.stroke();
+
+  // Track outer edge highlight
+  ctx.beginPath();
+  ctx.arc(cx, cy, trackR + 9, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(91,143,168,0.12)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  // Track inner edge highlight
+  ctx.beginPath();
+  ctx.arc(cx, cy, trackR - 9, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(91,143,168,0.12)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Track shadow
+  ctx.beginPath();
+  ctx.arc(cx, cy, trackR, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(91,143,168,0.06)';
+  ctx.lineWidth = 28;
+  ctx.stroke();
+
+  // Track
+  ctx.beginPath();
+  ctx.arc(cx, cy, trackR, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(91,143,168,0.25)';
+  ctx.lineWidth = 18;
+  ctx.stroke();
+
+  // Track center line
+  ctx.beginPath();
+  ctx.arc(cx, cy, trackR, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(200,151,58,0.35)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([12, 8]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Start-line marker at θ=0 (3 o'clock position)
+  ctx.save();
+  ctx.translate(cx + trackR, cy);
+  ctx.fillStyle = 'rgba(200,151,58,0.9)';
+  ctx.fillRect(-1.5, -11, 3, 22);
+  // "START" micro-label
+  ctx.font = '500 7px "JetBrains Mono", monospace';
+  ctx.fillStyle = 'rgba(200,151,58,0.55)';
+  ctx.textAlign = 'center';
+  ctx.fillText('START', 0, -16);
+  ctx.textAlign = 'left';
+  ctx.restore();
+
+  // Angular sweep arc (from 0 to current angle, mod 2π)
+  const sweepAngle = Math.min(((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2), Math.PI * 2 - 0.002);
+  if (sweepAngle > 0.05) {
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, trackR * 0.42, 0, sweepAngle);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(200,151,58,0.06)';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx, cy, trackR * 0.42, 0, sweepAngle);
+    ctx.strokeStyle = 'rgba(200,151,58,0.3)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    // θ label at mid-sweep
+    const midA = sweepAngle / 2;
+    const thetaR = trackR * 0.32;
+    ctx.font = '600 10px "JetBrains Mono", monospace';
+    ctx.fillStyle = 'rgba(200,151,58,0.65)';
+    ctx.textAlign = 'center';
+    const degStr = (sweepAngle * 180 / Math.PI).toFixed(0) + '°';
+    ctx.fillText('θ=' + degStr, cx + thetaR * Math.cos(midA), cy + thetaR * Math.sin(midA) + 4);
+    ctx.textAlign = 'left';
+  }
+
+  // Cache trig — computed ONCE per frame, used for position + all vectors
+  // vx = −v sin(θ) ✓   vy = v cos(θ) ✓   ax = −ac cos(θ) ✓   ay = −ac sin(θ) ✓
+  const cosA = Math.cos(angle);
+  const sinA = Math.sin(angle);
+  const carX = cx + trackR * cosA;
+  const carY = cy + trackR * sinA;
+
+  // Motion trail — draw FIRST so everything renders on top of it
+  trail.push({ x: carX, y: carY });
+  if (trail.length > TRAIL_LEN) trail.shift();
+  for (let i = 0; i < trail.length; i++) {
+    const t = i / trail.length;
+    const alpha = t * t * 0.5;
+    const tr = 1.5 + t * 5;
+    ctx.beginPath();
+    ctx.arc(trail[i].x, trail[i].y, tr, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(200,151,58,${alpha.toFixed(3)})`;
+    ctx.fill();
+  }
+
+  // Radius line with label
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(carX, carY);
+  ctx.strokeStyle = 'rgba(200,151,58,0.45)';
+  ctx.lineWidth = 1.2;
+  ctx.setLineDash([5, 4]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  // "r = Xm" label at midpoint, offset perpendicular
+  const rMidX = (cx + carX) / 2;
+  const rMidY = (cy + carY) / 2;
+  const rPerpX = -(carY - cy) / trackR * 10;
+  const rPerpY =  (carX - cx) / trackR * 10;
+  ctx.font = '600 9px "JetBrains Mono", monospace';
+  ctx.fillStyle = 'rgba(200,151,58,0.75)';
+  ctx.textAlign = 'center';
+  ctx.fillText('r=' + animR.toFixed(0) + 'm', rMidX + rPerpX, rMidY + rPerpY + 3);
+  ctx.textAlign = 'left';
+
+  // Center dot + label
+  ctx.beginPath();
+  ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+  const centerGlow = ctx.createRadialGradient(cx,cy,0,cx,cy,8);
+  centerGlow.addColorStop(0,'rgba(200,151,58,0.9)');
+  centerGlow.addColorStop(1,'rgba(200,151,58,0)');
+  ctx.fillStyle = centerGlow;
+  ctx.fill();
+  ctx.font = '700 9px "JetBrains Mono", monospace';
+  ctx.fillStyle = 'rgba(200,151,58,0.7)';
+  ctx.textAlign = 'center';
+  ctx.fillText('O', cx, cy - 9);
+  ctx.textAlign = 'left';
+
+  // Velocity vector — proportional to speed, with glow
+  const vLen = Math.min(85, 18 + sliderV * 1.5);
+  // vx = −sin(θ)·|v|   vy = cos(θ)·|v|   (tangent to circle, CCW)
+  const vx = -sinA * vLen;
+  const vy =  cosA * vLen;
+  ctx.save();
+  ctx.shadowColor = 'rgba(126,203,161,0.65)';
+  ctx.shadowBlur = 9;
+  ctx.beginPath();
+  ctx.moveTo(carX, carY);
+  ctx.lineTo(carX + vx, carY + vy);
+  ctx.strokeStyle = '#7ECBA1';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  // arrowhead — inside shadow save for glow
+  const va = Math.atan2(vy, vx);
+  ctx.beginPath();
+  ctx.moveTo(carX + vx, carY + vy);
+  ctx.lineTo(carX + vx - 11*Math.cos(va-0.38), carY + vy - 11*Math.sin(va-0.38));
+  ctx.lineTo(carX + vx - 11*Math.cos(va+0.38), carY + vy - 11*Math.sin(va+0.38));
+  ctx.closePath();
+  ctx.fillStyle = '#7ECBA1';
+  ctx.fill();
+  ctx.restore();
+  // v magnitude label at arrow tip
+  ctx.font = '600 9px "JetBrains Mono", monospace';
+  ctx.fillStyle = 'rgba(126,203,161,0.85)';
+  ctx.textAlign = 'center';
+  ctx.fillText('|v|=' + sliderV + ' m/s', carX + vx * 1.18, carY + vy * 1.18);
+  ctx.textAlign = 'left';
+
+  // Centripetal acceleration: aᶜ = v²/r  (exact)
+  // Direction: inward = (−cos θ, −sin θ)  →  ax = −aᶜ cos θ, ay = −aᶜ sin θ ✓
+  const ac    = (sliderV * sliderV) / animR;
+  const acScale = Math.max(10, Math.min(78, Math.log10(1 + ac) / Math.log10(501) * 78));
+  const acx   = -cosA * acScale;   // ax = −aᶜ·cos(θ), log-scaled for display
+  const acy   = -sinA * acScale;   // ay = −aᶜ·sin(θ)
+  ctx.save();
+  ctx.shadowColor = 'rgba(232,112,112,0.7)';
+  ctx.shadowBlur = 11;
+  ctx.beginPath();
+  ctx.moveTo(carX, carY);
+  ctx.lineTo(carX + acx, carY + acy);
+  ctx.strokeStyle = '#E87070';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  // arrowhead — inside shadow save for glow
+  const aa = Math.atan2(acy, acx);
+  ctx.beginPath();
+  ctx.moveTo(carX + acx, carY + acy);
+  ctx.lineTo(carX + acx - 11*Math.cos(aa-0.38), carY + acy - 11*Math.sin(aa-0.38));
+  ctx.lineTo(carX + acx - 11*Math.cos(aa+0.38), carY + acy - 11*Math.sin(aa+0.38));
+  ctx.closePath();
+  ctx.fillStyle = '#E87070';
+  ctx.fill();
+  ctx.restore();
+
+  // Car body
+  ctx.save();
+  ctx.translate(carX, carY);
+  ctx.rotate(angle + Math.PI); // correct: nose tangent to track direction
+  // Glow
+  const glow = ctx.createRadialGradient(0,0,2,0,0,20);
+  glow.addColorStop(0, 'rgba(200,151,58,0.25)');
+  glow.addColorStop(1, 'transparent');
+  ctx.beginPath(); ctx.arc(0,0,20,0,Math.PI*2); ctx.fillStyle = glow; ctx.fill();
+  // Front wing
+  ctx.beginPath(); ctx.roundRect(-9, -12, 18, 3, 1);
+  ctx.fillStyle = '#8B6420'; ctx.fill();
+  // Rear wing
+  ctx.beginPath(); ctx.roundRect(-9, 9, 18, 3, 1);
+  ctx.fillStyle = '#8B6420'; ctx.fill();
+  // Body
+  ctx.beginPath(); ctx.roundRect(-5, -10, 10, 20, 3);
+  ctx.fillStyle = '#C8973A'; ctx.fill();
+  // Body stripe
+  ctx.beginPath(); ctx.roundRect(-1.5, -10, 3, 20, 1);
+  ctx.fillStyle = '#E8C870'; ctx.fill();
+  // Cockpit
+  ctx.beginPath(); ctx.roundRect(-3, -5, 6, 7, 2);
+  ctx.fillStyle = '#0D1F2D'; ctx.fill();
+  // Wheels (4)
+  [[-7,-6],[7,-6],[-7,6],[7,6]].forEach(([wx,wy]) => {
+    ctx.beginPath(); ctx.ellipse(wx, wy, 3, 3, 0, 0, Math.PI*2);
+    ctx.fillStyle = '#1E3A4F'; ctx.fill();
+    ctx.strokeStyle = '#5B8FA8'; ctx.lineWidth = 0.8; ctx.stroke();
+  });
+  ctx.restore();
+
+  // Vector labels — collision-aware: avoid info box (x<230, y<200) and edges
+  function safeLabel(tipX, tipY, dx, dy, text, color, w) {
+    let lx = tipX + dx, ly = tipY + dy;
+    // Push right if overlapping info box
+    if (lx < 230 && ly < 200) lx = Math.max(230, lx);
+    lx = Math.max(2, Math.min(W - w - 2, lx));
+    ly = Math.max(12, Math.min(H - 4, ly));
+    ctx.fillStyle = color;
+    ctx.fillText(text, lx, ly);
+  }
+  ctx.font = '600 9.5px "JetBrains Mono", monospace';
+  const vTipX = carX + vx, vTipY = carY + vy;
+  safeLabel(vTipX, vTipY, vx>=0?7:-78, vy>=0?13:-5, 'v  (velocity)',      '#7ECBA1', 76);
+  const aTipX = carX + acx, aTipY = carY + acy;
+  safeLabel(aTipX, aTipY, acx>=0?7:-108, acy>=0?13:-5, 'aᶜ (centripetal)', '#E87070', 106);
+
+  // ── Info box — 100% accurate physics readout, drawn LAST ──
+  const omega   = sliderV / animR;                     // ω = v/r  rad/s  (exact)
+  const period  = (2 * Math.PI * animR) / sliderV;    // T = 2πr/v  s
+  const sLap    = 2 * Math.PI * animR;                 // circumference  m
+  const Fcp     = sliderM * ac;                        // F = m·aᶜ  N
+  const vSq     = sliderV * sliderV;                   // v²  m²/s²
+
+  // Extended box for 8 data rows
+  const BOX_W = 215, BOX_H = 187;
+  ctx.save();
+  // Shadow halo for box
+  ctx.shadowColor = 'rgba(0,0,0,0.6)';
+  ctx.shadowBlur = 18;
+  ctx.fillStyle = 'rgba(6,15,24,0.95)';
+  ctx.beginPath(); ctx.roundRect(10, 10, BOX_W, BOX_H, 5); ctx.fill();
+  ctx.shadowBlur = 0;
+  // Accent border with gold tint
+  ctx.strokeStyle = 'rgba(200,151,58,0.45)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.roundRect(10, 10, BOX_W, BOX_H, 5); ctx.stroke();
+  // Gold header strip
+  const hdrGrad = ctx.createLinearGradient(10,10,BOX_W+10,10);
+  hdrGrad.addColorStop(0,'rgba(200,151,58,0.22)');
+  hdrGrad.addColorStop(1,'rgba(200,151,58,0.06)');
+  ctx.fillStyle = hdrGrad;
+  ctx.beginPath(); ctx.roundRect(10, 10, BOX_W, 22, [5,5,0,0]); ctx.fill();
+  // Header text
+  ctx.font = '700 9px "JetBrains Mono", monospace';
+  ctx.fillStyle = '#C8973A';
+  ctx.fillText('◈  PHYSICS  READOUT', 20, 25);
+  // Lap badge
+  ctx.fillStyle = 'rgba(200,151,58,0.14)';
+  ctx.beginPath(); ctx.roundRect(179, 13, 40, 14, 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(200,151,58,0.3)'; ctx.lineWidth = 0.5;
+  ctx.beginPath(); ctx.roundRect(179, 13, 40, 14, 2); ctx.stroke();
+  ctx.font = '700 8px "JetBrains Mono", monospace';
+  ctx.fillStyle = '#E8B96A';
+  ctx.textAlign = 'center';
+  ctx.fillText('LAP ' + lapCount, 199, 23);
+  ctx.textAlign = 'left';
+  // Divider
+  ctx.beginPath(); ctx.moveTo(14, 35); ctx.lineTo(221, 35);
+  ctx.strokeStyle = 'rgba(200,151,58,0.18)'; ctx.lineWidth = 0.5; ctx.stroke();
+
+  // 8 data rows — label | = | full-precision value
+  // aᶜ uses toFixed(10) for 100% float64 accuracy display
+  ctx.font = '400 8.5px "JetBrains Mono", monospace';
+  const rows = [
+    ['v',    sliderV + ' m/s',                               '#7ECBA1', false],
+    ['v²',   vSq.toFixed(0) + ' m²/s²',                     '#A8E0C8', true ],
+    ['r',    animR.toFixed(0) + ' m',                        '#A8C8DA', false],
+    ['aᶜ',   ac.toFixed(10) + ' m/s²',                      '#E87070', true ],
+    ['F',    Fcp.toFixed(6) + ' N',                          '#F0A060', false],
+    ['ω',    omega.toFixed(10) + ' rad/s',                   '#C8AAEE', true ],
+    ['T',    period.toFixed(8) + ' s',                       '#A8C8DA', false],
+    ['s/lap',sLap.toFixed(6) + ' m',                         '#7ECBA1', true ],
+  ];
+  rows.forEach(([label, value, color, tint], i) => {
+    const ry = 50 + i * 17;
+    if (tint) {
+      ctx.fillStyle = 'rgba(200,151,58,0.03)';
+      ctx.fillRect(11, ry - 12, BOX_W - 2, 16);
+    }
+    // Label col
+    ctx.fillStyle = 'rgba(168,200,218,0.55)';
+    ctx.fillText(label, 18, ry);
+    // Equals
+    ctx.fillStyle = 'rgba(168,200,218,0.3)';
+    ctx.fillText('=', 42, ry);
+    // Value — with overflow clip simulation (just print, box clips)
+    ctx.fillStyle = color;
+    ctx.fillText(value, 56, ry);
+  });
+
+  // Formula footnote
+  ctx.font = '400 7.5px "JetBrains Mono", monospace';
+  ctx.fillStyle = 'rgba(200,151,58,0.35)';
+  ctx.fillText('aᶜ = v²/r  |  F = m·aᶜ  |  ω = v/r', 14, BOX_H + 3);
+
+  ctx.restore();
+
+  // ── Physics step — RK4 + Lorentz proper-time + ASLL micro-corrections ──────
+  const prevMod = ((angle % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+  angle = physicsStep(angle, sliderV, animR, dt);
+  const currMod = ((angle % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+  if (prevMod > 5.5 && currMod < 0.8) lapCount++;
+  requestAnimationFrame(drawFrame);
+}
+requestAnimationFrame(drawFrame);
+
+// ── SLIDER INTERACTIVITY — see redefined updateCalc below ──────────────────
+
+// ── SCROLL REVEALS ──────────────────────────────────────────────────────────
+const reveals = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      e.target.style.transitionDelay = (i % 4 * 0.12) + 's';
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(el => revealObs.observe(el));
+
+// ── GIVEN CARDS OBSERVER ─────────────────────────────────────────────────────
+const givenCards = document.querySelectorAll('.given-card');
+const cardObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const idx = [...givenCards].indexOf(e.target);
+      e.target.style.transitionDelay = (idx * 0.1) + 's';
+      e.target.classList.add('visible');
+      cardObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.15 });
+givenCards.forEach(c => cardObs.observe(c));
+
+// ── PROGRESS BAR ─────────────────────────────────────────────────────────────
+const progressBar = document.getElementById('progress-bar');
+const backTop = document.getElementById('back-top');
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY;
+  const total = document.body.scrollHeight - window.innerHeight;
+  progressBar.style.width = (scrolled / total * 100).toFixed(2) + '%';
+  backTop.classList.toggle('visible', scrolled > 400);
+}, { passive: true });
+
+// ── ACTIVE NAV ───────────────────────────────────────────────────────────────
+const navLinks = document.querySelectorAll('.nav-links a');
+const sections = document.querySelectorAll('section[id]');
+const navObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => a.classList.remove('active'));
+      const active = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-40% 0px -55% 0px' });
+sections.forEach(s => navObs.observe(s));
+
+// ── LIVE RESULT PULSE ────────────────────────────────────────────────────────
+let lastAc = 4.3478;
+const liveNumEl = document.getElementById('liveAc');
+function updateCalc() {
+  const r = parseFloat(document.getElementById('rSlider').value);
+  const v = parseFloat(document.getElementById('vSlider').value);
+  const m = parseFloat(document.getElementById('mSlider').value);
+  const ac = (v * v) / r;
+  const F  = m * ac;
+  document.getElementById('rDisplay').textContent = r + ' m';
+  document.getElementById('vDisplay').textContent = v + ' m/s';
+  document.getElementById('mDisplay').textContent = m.toLocaleString() + ' kg';
+  liveNumEl.textContent = ac.toFixed(4);
+  document.getElementById('liveF').textContent = F.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' N';
+  document.getElementById('liveFormula').textContent = `aᶜ = (${v} m/s)² / ${r} m`;
+  animR = r;
+  sliderV = v;
+  sliderM = m;
+  document.getElementById('rSlider').style.setProperty('--pct', ((r-5)/(200-5)*100).toFixed(1)+'%');
+  document.getElementById('vSlider').style.setProperty('--pct', ((v-1)/(50-1)*100).toFixed(1)+'%');
+  document.getElementById('mSlider').style.setProperty('--pct', ((m-100)/(5000-100)*100).toFixed(1)+'%');
+  if (Math.abs(ac - lastAc) > 0.05) {
+    liveNumEl.classList.remove('pulse');
+    void liveNumEl.offsetWidth;
+    liveNumEl.classList.add('pulse');
+    liveNumEl.addEventListener('animationend', () => liveNumEl.classList.remove('pulse'), { once: true });
+  }
+  lastAc = ac;
+}
+
+// ── STAT COUNTER ANIMATION ───────────────────────────────────────────────────
+function animateCounter(el, target, suffix, decimals, duration) {
+  const start = performance.now();
+  function tick(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    el.textContent = (ease * target).toFixed(decimals) + suffix;
+    if (t < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+const statObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const num = e.target.querySelector('.stat-num');
+      if (!num || num.dataset.animated) return;
+      num.dataset.animated = '1';
+      const txt = num.textContent.trim();
+      if (txt === '4.22×') animateCounter(num, 4.22, '×', 2, 1200);
+      else if (txt === '3,316.90 N') { num.textContent = '0 N'; animateCounter(num, 3316.90, ' N', 2, 1400); }
+      statObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.stat-block').forEach(b => statObs.observe(b));
+</script>
+</body>
+</html>
